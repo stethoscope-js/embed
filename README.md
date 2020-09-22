@@ -44,7 +44,7 @@ This is a real-time screenshot of the above RescueTime weekly overview URL:
 
 ## 📄 License
 
-Code: [MIT](./LICENSE) © [Anand Chowdhary](https://anandchowdhary.com)
-Icons:
+- Code: [MIT](./LICENSE) © [Anand Chowdhary](https://anandchowdhary.com)
+- Icons:
   - Loader: [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) © [Rohith M S](https://thenounproject.com/rohithdezinr)
   - Error: [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) © [Roselin Christina](https://thenounproject.com/rosttarose)
