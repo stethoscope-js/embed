@@ -13,7 +13,7 @@ This repository is for Stethoscope's GitHub Actions package. We love contributio
 
 ### Issues
 
-We use the [stethoscope-js/stethoscope](https://github.com/stethoscope-js/stethoscope) repository for issues for all projects, including this one. If you found a bug or have a feature request, [open an issue](https://github.com/stethoscope-js/stethoscope/issues) in the Stethoscope repository and add the label "action".
+We use the [stethoscope-js/stethoscope](https://github.com/stethoscope-js/stethoscope) repository for issues for all projects, including this one. If you found a bug or have a feature request, [open an issue](https://github.com/stethoscope-js/stethoscope/issues) in the Stethoscope repository and add the label "embed".
 
 ## 💻 Usage
 
