@@ -1,7 +1,7 @@
 # 🩺📊 Stethoscope Embed
 
 [![Stethoscope](https://stethoscope.js.org/branding/badge-small.svg)](https://stethoscope.js.org)
-[![Node CI](https://github.com/stethoscope-js/embed/workflows/Node%20CI/badge.svg)](https://github.com/stethoscope-js/action/actions?query=workflow%3A%22Node+CI%22)
+[![Node CI](https://github.com/stethoscope-js/embed/workflows/Node%20CI/badge.svg)](https://github.com/stethoscope-js/embed/actions?query=workflow%3A%22Node+CI%22)
 
 This repository contains the web app for embeddable charts of your health and life data using Stethoscope. It's written in React and TypeScript and published at https://stethoscope.js.org/embed/.
 
