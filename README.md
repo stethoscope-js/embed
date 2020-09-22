@@ -9,7 +9,7 @@ This repository contains the web app for embeddable charts of your health and li
 
 ## 🎁 Contributing
 
-This repository is for Stethoscope's GitHub Actions package. We love contributions, so please read our [Contributing Guidelines](https://github.com/stethoscope-js/.github/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/stethoscope-js/.github/blob/master/CODE_OF_CONDUCT.md) and open an issue or make a pull request!
+This repository is for Stethoscope's embeddable web app. We love contributions, so please read our [Contributing Guidelines](https://github.com/stethoscope-js/.github/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/stethoscope-js/.github/blob/master/CODE_OF_CONDUCT.md) and open an issue or make a pull request!
 
 ### Issues
 
