@@ -7,6 +7,8 @@ import { Line, Bar } from "react-chartjs-2";
 import dayjs from "dayjs";
 import "./styles.scss";
 
+const ucFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
 const subDirectories = ["rescuetime-time-tracking", "oura-activity", "oura-sleep"];
 
 const categoryColors: { [index: string]: string } = {
@@ -21,6 +23,10 @@ const categoryColors: { [index: string]: string } = {
   "Social Networking": "#cc423a",
   Entertainment: "#da422b",
   Shopping: "#e84118",
+  rem: "#272740",
+  deep: "#514b83",
+  light: "#8d569f",
+  awake: "#f7e1ef",
 };
 
 const itemNames: { [index: string]: string } = {
@@ -83,7 +89,7 @@ const getDatasets = (
     return Object.keys(total)
       .sort((a, b) => Object.keys(categoryColors).indexOf(a) - Object.keys(categoryColors).indexOf(b))
       .map((key) => ({
-        label: key,
+        label: ucFirst(key || ""),
         data: total[key],
         borderWidth: 1,
         borderColor: "#fff",
@@ -172,7 +178,15 @@ const App: FunctionComponent<{}> = () => {
       })
       .catch(() => setError(true));
     useMemoApiData(repo, api, path)
-      .then(setGraphData)
+      .then((data) => {
+        Object.keys(data).forEach((key) => {
+          if (data[key].rem) {
+            delete data[key].total;
+            delete data[key].duration;
+          }
+        });
+        setGraphData(data);
+      })
       .catch(() => setError(true));
   }
 
