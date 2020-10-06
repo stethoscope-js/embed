@@ -7,11 +7,7 @@ import { Line, Bar } from "react-chartjs-2";
 import dayjs from "dayjs";
 import "./styles.scss";
 
-const subDirectories = [
-  "rescuetime-time-tracking",
-  "oura-activity",
-  "oura-sleep",
-];
+const subDirectories = ["rescuetime-time-tracking", "oura-activity", "oura-sleep"];
 
 const categoryColors: { [index: string]: string } = {
   "Software Development": "#00429d",
@@ -35,8 +31,7 @@ const itemNames: { [index: string]: string } = {
 
 const getItemName = (name: string) => itemNames[name] ?? name;
 
-export const zero = (num: string) =>
-  parseInt(num) > 9 ? parseInt(num) : `0${num}`;
+export const zero = (num: string) => (parseInt(num) > 9 ? parseInt(num) : `0${num}`);
 
 const changeLastPart = (path: string, last: string) => {
   const key = path.split("/");
@@ -46,29 +41,20 @@ const changeLastPart = (path: string, last: string) => {
 
 const cleanValues = (items: number[], api: string, path: string) => {
   // if (path.includes("/months/") || path.includes("/days/") || path.includes("/weeks/"))
-  if (path.includes("/months/"))
-    return items.map((val) =>
-      parseFloat((val / (3600 * 30.4368499)).toFixed(2))
-    );
+  if (path.includes("/months/")) return items.map((val) => parseFloat((val / (3600 * 30.4368499)).toFixed(2)));
   return items.map((val) => parseFloat((val / 3600).toFixed(2)));
   // return items.map((val) => parseInt(String(val)));
 };
 const cleanKeys = (items: string[], api: string, path: string) => {
-  if (path.includes("/months/"))
-    return items.map((val) => dayjs(`2020-${zero(val)}-15`).format("MMMM"));
-  if (path.includes("/weeks/"))
-    return items.map((val) => dayjs(val).format("dddd, MMM D"));
+  if (path.includes("/months/")) return items.map((val) => dayjs(`2020-${zero(val)}-15`).format("MMMM"));
+  if (path.includes("/weeks/")) return items.map((val) => dayjs(val).format("dddd, MMM D"));
   return items;
 };
 const cleanTitle = (text?: string, path?: string) => {
   if (!text) return "";
   text = text.replace(".json", "");
-  if (path?.includes("/days/"))
-    text = dayjs(`${path.split("/days/")[1].split("/")[0]}-${text}-10`).format(
-      "MMMM YYYY"
-    );
-  if (path?.includes("/weeks/"))
-    return `Week ${text}, ${path.split("/weeks/")[1].split("/")[0]}`;
+  if (path?.includes("/days/")) text = dayjs(`${path.split("/days/")[1].split("/")[0]}-${text}-10`).format("MMMM YYYY");
+  if (path?.includes("/weeks/")) return `Week ${text}, ${path.split("/weeks/")[1].split("/")[0]}`;
   return text;
 };
 
@@ -92,16 +78,10 @@ const getDatasets = (
       });
     }
   });
-  Object.keys(total).forEach(
-    (key) => (total[key] = cleanValues(total[key], api, path))
-  );
+  Object.keys(total).forEach((key) => (total[key] = cleanValues(total[key], api, path)));
   if (!allValuesAreNumbers)
     return Object.keys(total)
-      .sort(
-        (a, b) =>
-          Object.keys(categoryColors).indexOf(a) -
-          Object.keys(categoryColors).indexOf(b)
-      )
+      .sort((a, b) => Object.keys(categoryColors).indexOf(a) - Object.keys(categoryColors).indexOf(b))
       .map((key) => ({
         label: key,
         data: total[key],
@@ -135,21 +115,9 @@ const App: FunctionComponent<{}> = () => {
 
   const getApiData = async (repo: string, api: string, path: string) => {
     const key = `${repo}${api}${path}`;
-    const cachedValue = window.localStorage.getItem(key);
-    if (cachedValue) {
-      const val = JSON.parse(cachedValue);
-      if (dayjs(val.expiry * 1000).isBefore(dayjs())) return val.value;
-      else window.localStorage.removeItem(key);
-    }
-    const response = await fetch(
-      `https://raw.githubusercontent.com/${repo}/master/data/${api}/${path}`
-    );
+    const response = await fetch(`https://raw.githubusercontent.com/${repo}/master/data/${api}/${path}`);
     if (!response.ok) throw new Error();
     const json = await response.json();
-    window.localStorage.setItem(
-      key,
-      JSON.stringify({ value: json, expiry: dayjs().add(1, "hour").unix() })
-    );
     return json;
   };
   const useMemoApiData = createMemo(getApiData);
@@ -162,26 +130,20 @@ const App: FunctionComponent<{}> = () => {
       .then((json) => {
         const items = pick(latest, json);
         if (Array.isArray(items)) {
-          window.location.href = `./?repo=${encodeURIComponent(
-            repo
-          )}&api=${encodeURIComponent(api)}&path=${encodeURIComponent(
+          window.location.href = `./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(
+            api
+          )}&path=${encodeURIComponent(
             `summary/${latest.replace(/\./g, "/")}/${items[items.length - 1]}`
-          )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(
-            chart
-          )}`;
+          )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`;
         } else if (typeof items === "object") {
           const dotted = dot(items);
           const lastKey = Object.keys(dotted).pop();
           if (lastKey) {
-            window.location.href = `./?repo=${encodeURIComponent(
-              repo
-            )}&api=${encodeURIComponent(api)}&path=${encodeURIComponent(
-              `summary/${latest.replace(/\./g, "/")}/${lastKey
-                .split("[")[0]
-                .replace(/\./g, "/")}/${dotted[lastKey]}`
-            )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(
-              chart
-            )}`;
+            window.location.href = `./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(
+              api
+            )}&path=${encodeURIComponent(
+              `summary/${latest.replace(/\./g, "/")}/${lastKey.split("[")[0].replace(/\./g, "/")}/${dotted[lastKey]}`
+            )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`;
           }
         }
       })
@@ -202,17 +164,10 @@ const App: FunctionComponent<{}> = () => {
         });
         if (subDirectories.includes(api)) {
           if (
-            JSON.stringify(latestOptions) !==
-            JSON.stringify(
-              Object.keys(data[path.split("summary/")[1].split("/")[0]])
-            )
+            JSON.stringify(latestOptions) !== JSON.stringify(Object.keys(data[path.split("summary/")[1].split("/")[0]]))
           )
-            setLastestOptions(
-              Object.keys(data[path.split("summary/")[1].split("/")[0]])
-            );
-        } else if (
-          JSON.stringify(latestOptions) !== JSON.stringify(Object.keys(data))
-        )
+            setLastestOptions(Object.keys(data[path.split("summary/")[1].split("/")[0]]));
+        } else if (JSON.stringify(latestOptions) !== JSON.stringify(Object.keys(data)))
           setLastestOptions(Object.keys(data));
       })
       .catch(() => setError(true));
@@ -271,13 +226,9 @@ const App: FunctionComponent<{}> = () => {
         <div>
           {previous ? (
             <Link
-              to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(
-                api
-              )}&path=${encodeURIComponent(
+              to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(api)}&path=${encodeURIComponent(
                 changeLastPart(path, previous)
-              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(
-                chart
-              )}`}
+              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`}
             >
               &larr; {cleanTitle(previous.replace(".json", ""), path)}
             </Link>
@@ -287,13 +238,9 @@ const App: FunctionComponent<{}> = () => {
         <div>
           {next ? (
             <Link
-              to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(
-                api
-              )}&path=${encodeURIComponent(
+              to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(api)}&path=${encodeURIComponent(
                 changeLastPart(path, next)
-              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(
-                chart
-              )}`}
+              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`}
             >
               {cleanTitle(next, path)} &rarr;
             </Link>
@@ -320,7 +267,7 @@ const App: FunctionComponent<{}> = () => {
                   {
                     stacked: true,
                     ticks: {
-                      callback: (label) => `${label} hours`,
+                      callback: (label: string) => `${label} hours`,
                     },
                   },
                 ],
@@ -346,7 +293,7 @@ const App: FunctionComponent<{}> = () => {
                   {
                     stacked: true,
                     ticks: {
-                      callback: (label) => `${label} hours`,
+                      callback: (label: string) => `${label} hours`,
                     },
                   },
                 ],
@@ -358,11 +305,7 @@ const App: FunctionComponent<{}> = () => {
       <nav>
         {latestOptions
           .filter((item) => !item.endsWith("years"))
-          .sort(
-            (a, b) =>
-              Object.keys(itemNames).indexOf(a) -
-              Object.keys(itemNames).indexOf(b)
-          )
+          .sort((a, b) => Object.keys(itemNames).indexOf(a) - Object.keys(itemNames).indexOf(b))
           .map((item) => (
             <Link
               className={
@@ -375,15 +318,9 @@ const App: FunctionComponent<{}> = () => {
                   : ""
               }
               key={item}
-              to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(
-                api
-              )}&latest=${encodeURIComponent(
-                subDirectories.includes(api)
-                  ? `${path.split("summary/")[1].split("/")[0]}.${item}`
-                  : item
-              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(
-                chart
-              )}`}
+              to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(api)}&latest=${encodeURIComponent(
+                subDirectories.includes(api) ? `${path.split("summary/")[1].split("/")[0]}.${item}` : item
+              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`}
             >
               {getItemName(item)}
             </Link>
