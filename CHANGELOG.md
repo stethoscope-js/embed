@@ -1,3 +1,11 @@
+# [v1.1.0](https://github.com/stethoscope-js/embed/compare/v1.0.0...v1.1.0) (2020-10-06)
+
+## ✨ New features
+- [`181cb58`](https://github.com/stethoscope-js/embed/commit/181cb58)  Support nested Oura sleep data
+
+## ♻️ Updates
+- [`b058ddd`](https://github.com/stethoscope-js/embed/commit/b058ddd)  Remove local storage caching
+
 # v1.0.0 (2020-09-22)
 
 ## ✨ New features
