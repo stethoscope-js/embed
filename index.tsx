@@ -9,7 +9,7 @@ import "./styles.scss";
 
 const ucFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const subDirectories = ["rescuetime-time-tracking", "oura-activity", "oura-sleep"];
+const subDirectories = ["rescuetime-time-tracking", "oura-activity"];
 
 const categoryColors: { [index: string]: string } = {
   "Software Development": "#00429d",
@@ -180,9 +180,11 @@ const App: FunctionComponent<{}> = () => {
     useMemoApiData(repo, api, path)
       .then((data) => {
         Object.keys(data).forEach((key) => {
-          if (data[key].rem) {
+          if (data[key].deep || data[key].light || data[key].awake) {
             delete data[key].total;
+            delete data[key].score;
             delete data[key].duration;
+            delete data[key].efficiency;
           }
         });
         setGraphData(data);
