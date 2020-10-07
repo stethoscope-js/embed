@@ -1,3 +1,10 @@
+# [v1.1.1](https://github.com/stethoscope-js/embed/compare/v1.1.0...v1.1.1) (2020-10-07)
+
+## 🐛 Bug fixes
+- [`b7cc153`](https://github.com/stethoscope-js/embed/commit/b7cc153)  Remove oura-sleep as subdirectory type
+
+- [`bc620f1`](https://github.com/stethoscope-js/embed/commit/bc620f1)  Ensure correct attributes for keys
+
 # [v1.1.0](https://github.com/stethoscope-js/embed/compare/v1.0.0...v1.1.0) (2020-10-06)
 
 ## ✨ New features
