@@ -35,3 +35,9 @@ jobs:
         env:
           BUILD_DIR: "dist"
           GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Trigger repository dispatch event
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          repository: stethoscope-js/stethoscope.js.org
+          token: ${{ secrets.GH_PAT }}
+          event-type: build
