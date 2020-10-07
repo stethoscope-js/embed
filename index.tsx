@@ -75,17 +75,24 @@ const getDatasets = (
     if (typeof value === "object") allValuesAreNumbers = false;
   });
   let total: any = {};
+  let allKeys = new Set<string>();
   Object.keys(graphData).forEach((key0) => {
     const value = (graphData as any)[key0];
     if (typeof value === "object") {
-      Object.keys(value).forEach((key) => {
+      Object.keys(value).forEach((key) => allKeys.add(key));
+    }
+  });
+  Object.keys(graphData).forEach((key0) => {
+    const value = (graphData as any)[key0];
+    if (typeof value === "object") {
+      allKeys.forEach((key) => {
         total[key] = total[key] ?? [];
         total[key].push(value[key] ?? 0);
       });
     }
   });
   Object.keys(total).forEach((key) => (total[key] = cleanValues(total[key], api, path)));
-  if (!allValuesAreNumbers)
+  if (!allValuesAreNumbers) {
     return Object.keys(total)
       .sort((a, b) => Object.keys(categoryColors).indexOf(a) - Object.keys(categoryColors).indexOf(b))
       .map((key) => ({
@@ -95,6 +102,7 @@ const getDatasets = (
         borderColor: "#fff",
         backgroundColor: categoryColors[key] ?? color,
       }));
+  }
   return [
     {
       data: cleanValues(Object.values(graphData) as number[], api, path),
