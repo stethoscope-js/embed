@@ -48,6 +48,21 @@ nav {
   }
 }
 
+.manifest-status {
+  margin: 1rem 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.4rem;
+  background: #eef7ee;
+  color: #245c2a;
+  font-size: 0.9rem;
+  text-align: center;
+  &.failed,
+  &.skipped {
+    background: #fff4df;
+    color: #704b00;
+  }
+}
+
 .loading,
 .error {
   svg {
