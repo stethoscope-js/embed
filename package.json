@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html --public-url ./"
+    "build": "parcel build index.html --public-url ./",
+    "test": "rm -rf .test-build && tsc data-url.ts data-url.spec.ts --module commonjs --target es2018 --lib es2018,dom --outDir .test-build && node .test-build/data-url.spec.js"
   },
   "repository": {
     "type": "git",

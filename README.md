@@ -30,6 +30,7 @@ You can simple embed this using an HTML `<iframe>` element:
 In the above example, the query parameters are the following, URL encoded:
 
 - `repo`: Your repository on GitHub, e.g., `AnandChowdhary/life`
+- `ref`: Optional branch, tag, or commit SHA to read. It defaults to `master` for backward compatibility.
 - `api`: The data you want to visualize, e.g., `rescuetime-time-tracking`, which corresponds to the directory in [`./data`](./data)
 - `latest`: The visualization to display, based on the specific `api.json` keys, e.g., `top-overview.days`
 

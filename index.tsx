@@ -5,6 +5,7 @@ import { pick, dot } from "dot-object";
 import { Link } from "wouter";
 import { Line, Bar } from "react-chartjs-2";
 import dayjs from "dayjs";
+import { getDataUrl, getRefQuery } from "./data-url";
 import "./styles.scss";
 
 const ucFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -114,6 +115,7 @@ const getDatasets = (
 const App: FunctionComponent<{}> = () => {
   const path = useSearchParam("path");
   const repo = useSearchParam("repo");
+  const repoRef = useSearchParam("ref") || "master";
   const api = useSearchParam("api");
   const latest = useSearchParam("latest");
   const color = useSearchParam("color") || "#04AAF5";
@@ -127,9 +129,8 @@ const App: FunctionComponent<{}> = () => {
     [index: number]: number | { [index: string]: number };
   }>({});
 
-  const getApiData = async (repo: string, api: string, path: string) => {
-    const key = `${repo}${api}${path}`;
-    const response = await fetch(`https://raw.githubusercontent.com/${repo}/master/data/${api}/${path}`);
+  const getApiData = async (repo: string, repoRef: string, api: string, path: string) => {
+    const response = await fetch(getDataUrl(repo, api, path, repoRef));
     if (!response.ok) throw new Error();
     const json = await response.json();
     return json;
@@ -140,7 +141,7 @@ const App: FunctionComponent<{}> = () => {
 
   if (latest) {
     console.log("loading latest");
-    useMemoApiData(repo, api, "api.json")
+    useMemoApiData(repo, repoRef, api, "api.json")
       .then((json) => {
         const items = pick(latest, json);
         if (Array.isArray(items)) {
@@ -148,7 +149,7 @@ const App: FunctionComponent<{}> = () => {
             api
           )}&path=${encodeURIComponent(
             `summary/${latest.replace(/\./g, "/")}/${items[items.length - 1]}`
-          )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`;
+          )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}${getRefQuery(repoRef)}`;
         } else if (typeof items === "object") {
           const dotted = dot(items);
           const lastKey = Object.keys(dotted).pop();
@@ -157,13 +158,13 @@ const App: FunctionComponent<{}> = () => {
               api
             )}&path=${encodeURIComponent(
               `summary/${latest.replace(/\./g, "/")}/${lastKey.split("[")[0].replace(/\./g, "/")}/${dotted[lastKey]}`
-            )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`;
+            )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}${getRefQuery(repoRef)}`;
           }
         }
       })
       .catch(() => setError(true));
   } else if (path && path.startsWith("summary/")) {
-    useMemoApiData(repo, api, "api.json")
+    useMemoApiData(repo, repoRef, api, "api.json")
       .then((data) => {
         const key = path.split("summary/")[1].split("/");
         const last = key.pop();
@@ -185,7 +186,7 @@ const App: FunctionComponent<{}> = () => {
           setLastestOptions(Object.keys(data));
       })
       .catch(() => setError(true));
-    useMemoApiData(repo, api, path)
+    useMemoApiData(repo, repoRef, api, path)
       .then((data) => {
         Object.keys(data).forEach((key) => {
           if (data[key].deep || data[key].light || data[key].awake) {
@@ -252,7 +253,7 @@ const App: FunctionComponent<{}> = () => {
             <Link
               to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(api)}&path=${encodeURIComponent(
                 changeLastPart(path, previous)
-              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`}
+              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}${getRefQuery(repoRef)}`}
             >
               &larr; {cleanTitle(previous.replace(".json", ""), path)}
             </Link>
@@ -264,7 +265,7 @@ const App: FunctionComponent<{}> = () => {
             <Link
               to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(api)}&path=${encodeURIComponent(
                 changeLastPart(path, next)
-              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`}
+              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}${getRefQuery(repoRef)}`}
             >
               {cleanTitle(next, path)} &rarr;
             </Link>
@@ -344,7 +345,7 @@ const App: FunctionComponent<{}> = () => {
               key={item}
               to={`./?repo=${encodeURIComponent(repo)}&api=${encodeURIComponent(api)}&latest=${encodeURIComponent(
                 subDirectories.includes(api) ? `${path.split("summary/")[1].split("/")[0]}.${item}` : item
-              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}`}
+              )}&color=${encodeURIComponent(color)}&chart=${encodeURIComponent(chart)}${getRefQuery(repoRef)}`}
             >
               {getItemName(item)}
             </Link>
