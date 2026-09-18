@@ -3,40 +3,56 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
+permissions:
+  contents: read
 jobs:
-  release:
+  validate:
     name: Build and test
-    runs-on: ubuntu-18.04
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 12
+          node-version: 14
       - name: Install dependencies
         run: npm ci
-      - name: Build TypeScript
-        run: npm run build
       - name: Run tests
-        run: npm run test
-      - name: Release
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GIT_AUTHOR_NAME: "Stethoscoper"
-          GIT_AUTHOR_EMAIL: "stethoscope-js@anandchowdhary.com"
-          GIT_COMMITTER_NAME: "Stethoscoper"
-          GIT_COMMITTER_EMAIL: "stethoscope-js@anandchowdhary.com"
+        run: npm test
+      - name: Build site
+        run: npm run build
+
+  deploy:
+    name: Deploy site
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, '[skip ci]')
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Build site
+        run: npm run build
       - name: Deploy site to GitHub Pages
-        uses: maxheld83/ghpages@v0.3.0
-        env:
-          BUILD_DIR: "dist"
-          GH_PAT: ${{ secrets.GH_PAT }}
-      - name: Trigger repository dispatch event
-        uses: peter-evans/repository-dispatch@v1
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+      - name: Trigger docs site rebuild
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.0
         with:
           repository: stethoscope-js/stethoscope.js.org
           token: ${{ secrets.GH_PAT }}
