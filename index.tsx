@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { render } from "react-dom";
 import { useSearchParam, createMemo } from "react-use";
 import { pick, dot } from "dot-object";
@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { Line, Bar } from "react-chartjs-2";
 import dayjs from "dayjs";
 import { getDataUrl, getRefQuery } from "./data-url";
+import { formatManifestStatus, getManifestStatus, ManifestStatus } from "./manifest-status";
 import "./styles.scss";
 
 const ucFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -125,6 +126,7 @@ const App: FunctionComponent<{}> = () => {
   const [error, setError] = useState<boolean>(false);
   const [next, setNext] = useState<string | null>(null);
   const [latestOptions, setLastestOptions] = useState<string[]>([]);
+  const [manifestStatus, setManifestStatus] = useState<ManifestStatus | null>(null);
   const [graphData, setGraphData] = useState<{
     [index: number]: number | { [index: string]: number };
   }>({});
@@ -136,6 +138,20 @@ const App: FunctionComponent<{}> = () => {
     return json;
   };
   const useMemoApiData = createMemo(getApiData);
+
+  useEffect(() => {
+    let active = true;
+    setManifestStatus(null);
+    if (!repo || !api) return () => undefined;
+
+    getManifestStatus(repo, repoRef, api).then((status) => {
+      if (active) setManifestStatus(status);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [repo, repoRef, api]);
 
   if (!repo || !api) return <h1>No repo or API</h1>;
 
@@ -247,6 +263,11 @@ const App: FunctionComponent<{}> = () => {
 
   return (
     <div>
+      {manifestStatus ? (
+        <p className={`manifest-status ${manifestStatus.status}`} role="status">
+          {formatManifestStatus(manifestStatus)}
+        </p>
+      ) : undefined}
       <nav>
         <div>
           {previous ? (
